@@ -6,8 +6,8 @@ from torch.utils.data import Dataset
 from torch import optim
 
 class ChessDataset(Dataset):
-    def __init__(self) -> None:
-        data = np.load("data_15k.npz")
+    def __init__(self, inFile) -> None:
+        data = np.load(inFile)
         self.X = data['arr_0']
         self.Y = data['arr_1']
         print("Loaded %d samples" % self.X.shape[0])
@@ -58,8 +58,8 @@ class Net(nn.Module):
         return torch.tanh(x)
 
 if __name__ ==  '__main__':
-    chess_dataset = ChessDataset()
-    train_loader = torch.utils.data.DataLoader(chess_dataset, batch_size=256, shuffle=True)
+    chess_dataset = ChessDataset("data_25k.npz")
+    train_loader = torch.utils.data.DataLoader(chess_dataset, batch_size=512, shuffle=True)
 
     model = Net()
     optimizer = optim.Adam(model.parameters())

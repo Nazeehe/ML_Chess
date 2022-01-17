@@ -16,21 +16,24 @@ if __name__ == "__main__":
 
     while playing:
         print(board)
-        print("(%s) Enter move: " % colors[board.turn])
-        move = input()
-        if move == "quit":
-            break
-        try:
-            board.push_uci(move)
-        except:
-            print("That was a bad move!")
+
+        while True: # Loop until player makes a legal move
+            print("(%s) Enter move: " % colors[board.turn])
+            move = input()
+            if move == "quit":
+                break
+            try:
+                board.push_uci(move)
+                break # good move
+            except:
+                print("That was a bad move!")
 
         if board.is_checkmate():
-            print("[%s] played a checkmate!" % colors[board.turn])
+            print("[%s] played a checkmate!" % colors[not board.turn])
             playing = False
             continue
+
         isort = []
-        index = 0
         for e in board.legal_moves:
             board.push(e)
             s = State(board)
@@ -38,14 +41,11 @@ if __name__ == "__main__":
             output = model(torch.tensor(brd).float())
             output = output.data[0][0]
             isort.append((output, e))
-            print("Move %d with pred %f" % (index, output))
             board.pop()
-            index += 1
-
 
         sortedMoves = sorted(isort, key=lambda x: x[0], reverse = board.turn)
         board.push(sortedMoves[0][1])
         if board.is_checkmate():
-            print("[%s] played a checkmate!" % colors[board.turn])
+            print("[%s] played a checkmate!" % colors[not board.turn])
             playing = False
 
